@@ -1,0 +1,40 @@
+{
+  "productName": "cloud-release-channels-demo",
+  "version": "0.1.2",
+  "identifier": "dev.crabnebula.cloud-release-channels-demo",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEM0Q0E4OUMxRUE0QTc2MjgKUldRb2RrcnF3WW5LeEp4MFluUjduSWtEcFdCYnZpZFdrOHlzUHZtVmo1Qk96alR5UEJaMXhIM1gK"
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "cloud-release-channels-demo",
+        "width": 800,
+        "height": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "createUpdaterArtifacts": true
+  }
+}
