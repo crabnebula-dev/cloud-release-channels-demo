@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_updater::{Update, UpdaterExt};
 
-const ORG_SLUG: &str = "testnew";
+const ORG_SLUG: &str = "crabnebula";
 const APP_SLUG: &str = "release-channels-demo";
 
 #[derive(Debug, thiserror::Error)]
