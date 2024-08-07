@@ -89,6 +89,7 @@ impl AppChannel {
     }
 
     fn save(&self, path: &Path) {
+        let _ = std::fs::create_dir_all(path.parent().unwrap());
         let _ = std::fs::write(
             path,
             serde_json::to_string(&*self.0.lock().unwrap()).unwrap(),
