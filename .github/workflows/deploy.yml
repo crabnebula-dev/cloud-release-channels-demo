@@ -38,6 +38,8 @@ jobs:
       - uses: actions/checkout@v4
       
       - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
 
       - name: 🧰 Install pnpm
         uses: pnpm/action-setup@v4
@@ -56,11 +58,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y webkit2gtk-4.1
 
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install NPM modules
+        run: pnpm install
+
       - name: Install x86_64-apple-darwin for macOS and build Tauri binaries
         if: matrix.os == 'macos-latest'
         run: |
           rustup target add x86_64-apple-darwin
-          pnpm install
           # build separate apps for Intel and Apple Silicon
           pnpm tauri build -- --target x86_64-apple-darwin
           pnpm tauri build -- --target aarch64-apple-darwin
@@ -70,9 +77,7 @@ jobs:
 
       - name: build Tauri app for Windows and Linux
         if: matrix.os != 'macos-latest'
-        run: |
-          pnpm install
-          pnpm tauri build
+        run: pnpm tauri build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
