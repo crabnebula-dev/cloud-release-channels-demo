@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CN_APP_SLUG: cloud-release-channels-demo
+  CN_APP_SLUG: release-channels-demo
 
 jobs:
   draft:
