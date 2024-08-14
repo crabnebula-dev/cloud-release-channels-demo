@@ -111,7 +111,7 @@ async fn fetch_update(
         "".to_string()
     };
     let url = url::Url::parse(&format!(
-        "https://cdn.cntest.me/update/{ORG_SLUG}/{APP_SLUG}/{{{{target}}}}-{{{{arch}}}}/{{{{current_version}}}}{channel_query}",
+        "https://cdn.crabnebula.app/update/{ORG_SLUG}/{APP_SLUG}/{{{{target}}}}-{{{{arch}}}}/{{{{current_version}}}}{channel_query}",
     ))?;
     println!("{url}");
     let update = app
