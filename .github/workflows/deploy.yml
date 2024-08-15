@@ -203,6 +203,10 @@ jobs:
 
       - name: Build iOS package
         run: |
+          # ensure we can recreate the iOS project (only if you have commited it)
+          # currently that's the only way to apply the certificate and mobile provision
+          # though Tauri will fix that soon
+          rm -rf src-tauri/gen/apple
           pnpm tauri ios init
           pnpm tauri ios build --export-method app-store-connect
         env:
