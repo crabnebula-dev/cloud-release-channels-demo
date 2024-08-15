@@ -49,6 +49,7 @@ jobs:
         with:
           toolchain: stable
           cache: true
+          rustflags: "" # do not set RUSTFLAGS
 
       - name: install Linux dependencies
         if: matrix.os == 'ubuntu-22.04'
