@@ -6,6 +6,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager, State};
+#[cfg(desktop)]
 use tauri_plugin_updater::{Update, UpdaterExt};
 
 const ORG_SLUG: &str = "crabnebula";
@@ -19,6 +20,7 @@ enum Error {
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     Url(#[from] url::ParseError),
+    #[cfg(desktop)]
     #[error(transparent)]
     Updater(#[from] tauri_plugin_updater::Error),
     #[error("there is no pending update")]
@@ -67,6 +69,7 @@ impl Display for Channel {
     }
 }
 
+#[cfg(desktop)]
 struct PendingUpdate(Mutex<Option<Update>>);
 struct AppChannel(Mutex<Channel>);
 
@@ -98,6 +101,7 @@ impl AppChannel {
 }
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+#[cfg(desktop)]
 #[tauri::command]
 async fn fetch_update(
     app: AppHandle,
@@ -113,7 +117,7 @@ async fn fetch_update(
     let url = url::Url::parse(&format!(
         "https://cdn.crabnebula.app/update/{ORG_SLUG}/{APP_SLUG}/{{{{target}}}}-{{{{arch}}}}/{{{{current_version}}}}{channel_query}",
     ))?;
-    println!("{url}");
+
     let update = app
         .updater_builder()
         .endpoints(vec![url])
@@ -131,6 +135,7 @@ async fn fetch_update(
     Ok(update_metadata)
 }
 
+#[cfg(desktop)]
 #[tauri::command]
 async fn install_update(pending_update: State<'_, PendingUpdate>) -> Result<()> {
     let Some(update) = pending_update.0.lock().unwrap().take() else {
@@ -180,16 +185,22 @@ fn available_channels() -> Vec<Channel> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
+            #[cfg(desktop)]
             fetch_update,
+            #[cfg(desktop)]
             install_update,
             set_channel,
             get_channel,
             available_channels
         ])
-        .manage(PendingUpdate(Mutex::new(None)))
         .setup(|app| {
+            #[cfg(desktop)]
+            {
+                app.manage(PendingUpdate(Mutex::new(None)));
+                app.handle()
+                    .plugin(tauri_plugin_updater::Builder::new().build())?;
+            }
             app.manage(AppChannel::load(&app_channel_path(app.handle())));
             Ok(())
         })

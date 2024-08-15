@@ -24,7 +24,7 @@ jobs:
           command: release draft ${{ env.CN_APP_SLUG }} --framework tauri
           api-key: ${{ secrets.CN_API_KEY }}
 
-  build:
+  build-desktop:
     needs: draft
 
     strategy:
@@ -82,7 +82,7 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
@@ -101,10 +101,123 @@ jobs:
         with:
           command: release upload ${{ env.CN_APP_SLUG }} --framework tauri
           api-key: ${{ secrets.CN_API_KEY }}
-          path: ./src-tauri
+
+  build-android:
+    needs: draft
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+
+      - name: Install stable toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          cache: true
+
+      - name: 🧰 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install NPM modules
+        run: pnpm install
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r26d
+          link-to-sdk: true
+
+      - name: Build Android package
+        run: |
+          export NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}
+          pnpm tauri android init
+          pnpm tauri android build
+
+      - name: Upload assets
+        uses: crabnebula-dev/cloud-release@v0.2.1
+        with:
+          command: release upload ${{ env.CN_APP_SLUG }} --framework tauri
+          api-key: ${{ secrets.CN_API_KEY }}
+
+  build-ios:
+    needs: draft
+    permissions:
+      contents: write
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+
+      - name: Install stable toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          cache: true
+          target: aarch64-apple-ios
+      
+      - name: 🧰 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Cache pnpm modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install NPM modules
+        run: pnpm install
+
+      - name: Build iOS package
+        run: |
+          pnpm tauri ios init
+          pnpm tauri ios build --export-method app-store-connect
+        env:
+          IOS_MOBILE_PROVISION: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+
+      - name: Upload assets
+        uses: crabnebula-dev/cloud-release@v0.2.1
+        with:
+          command: release upload ${{ env.CN_APP_SLUG }} --framework tauri
+          api-key: ${{ secrets.CN_API_KEY }}
 
   publish:
-    needs: build
+    needs: [build-desktop, build-android, build-ios]
 
     runs-on: ubuntu-latest
 
