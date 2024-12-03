@@ -120,7 +120,7 @@ async fn fetch_update(
 
     let update = app
         .updater_builder()
-        .endpoints(vec![url])
+        .endpoints(vec![url])?
         .build()?
         .check()
         .await?;
