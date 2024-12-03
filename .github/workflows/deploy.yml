@@ -52,6 +52,7 @@ jobs:
         with:
           toolchain: stable
           cache: true
+          rustflags: ""
 
       - name: install Linux dependencies
         if: matrix.os == 'ubuntu-22.04'
@@ -84,7 +85,6 @@ jobs:
         with:
           command: release upload ${{ env.CN_APPLICATION }} --framework tauri
           api-key: ${{ secrets.CN_API_KEY }}
-          path: ./src-tauri
 
   build_android:
     runs-on: ubuntu-latest
@@ -101,6 +101,7 @@ jobs:
         with:
           toolchain: stable
           cache: true
+          rustflags: ""
 
       - name: setup JDK 17
         uses: actions/setup-java@v4
@@ -146,7 +147,6 @@ jobs:
         with:
           command: release upload ${{ env.CN_APPLICATION }} --framework tauri
           api-key: ${{ secrets.CN_API_KEY }}
-          path: ./src-tauri
 
   build_ios:
     runs-on: macos-latest
@@ -163,6 +163,7 @@ jobs:
         with:
           toolchain: stable
           cache: true
+          rustflags: ""
 
       - name: install iOS target
         run: rustup target add aarch64-apple-ios
@@ -198,7 +199,6 @@ jobs:
         with:
           command: release upload ${{ env.CN_APPLICATION }} --framework tauri
           api-key: ${{ secrets.CN_API_KEY }}
-          path: ./src-tauri
 
   publish:
     needs: [build_desktop, build_android, build_ios]
