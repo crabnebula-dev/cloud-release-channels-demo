@@ -1,9 +1,6 @@
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
 
-.logo.solid:hover {
-  filter: drop-shadow(0 0 2em #2f5d90);
+.logo.nova:hover {
+  filter: drop-shadow(0 0 2em #902f78);
 }
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
@@ -23,7 +20,7 @@
 
 .container {
   margin: 0;
-  padding-top: 10vh;
+  padding-top: 3vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -61,7 +58,7 @@ h1 {
 }
 
 input,
-button {
+button, select, option {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -74,7 +71,7 @@ button {
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
 }
 
-button {
+button, select {
   cursor: pointer;
 }
 
@@ -84,6 +81,12 @@ button:hover {
 button:active {
   border-color: #396cd8;
   background-color: #e8e8e8;
+}
+select option {
+  background: #111; /* White background */
+  color: #eee; /* Text color */
+  padding: 8px; /* Inner padding */
+  cursor: pointer; /* Pointer cursor on hover */
 }
 
 input,
@@ -113,4 +116,57 @@ button {
   button:active {
     background-color: #0f0f0f69;
   }
+}
+
+/* Container styling for alignment and padding */
+.custom-select {
+  position: relative;
+  display: inline-block;
+  width: 200px; /* Adjust width as needed */
+}
+
+/* Default styling for the <select> */
+.styled-select {
+  appearance: none; /* Remove default browser styling */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  background-color: #222; /* Light background */
+  border: 2px solid #ccc; /* Subtle border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px 12px; /* Inner spacing */
+  font-size: 16px; /* Text size */
+  font-family: Arial, sans-serif; /* Font style */
+  color: #eee; /* Text color */
+  width: 100%; /* Ensure it fits container */
+  cursor: pointer; /* Pointer cursor on hover */
+  outline: none; /* Remove focus outline */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Styling for hover and focus states */
+.styled-select:hover,
+.styled-select:focus {
+  border-color: #007bff; /* Highlight border color */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Subtle glow */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+/* Optional styling for <option> elements */
+.styled-select option {
+  background: #333; /* White background */
+  color: #ddd; /* Text color */
+  padding: 8px; /* Inner padding */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+/* Add a custom dropdown arrow */
+.custom-select::after {
+  content: "▼";
+  position: absolute;
+  right: 10px; /* Adjust arrow position */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #eee;
+  pointer-events: none; /* Prevent interfering with select functionality */
 }

@@ -7,6 +7,8 @@
   ],
   "permissions": [
     "core:default",
-    "process:allow-restart"
+    "process:allow-restart",
+    "core:app:allow-version",
+    "opener:default"
   ]
 }
