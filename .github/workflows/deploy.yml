@@ -2,9 +2,16 @@ name: Tauri v2 Release Process
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      channel:
+        description: 'Channel'
+        type: choice
+        required: true
+        default: 'stable'
+        options:
+          - stable
+          - beta
+          - nightly
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -12,6 +19,7 @@ concurrency:
 
 env:
   CN_APPLICATION: "crabnebula/release-channels-demo"
+  CHANNEL_ARG: ${{ inputs.channel == 'stable' && '' || format('--channel {0}', inputs.channel) }}
 
 jobs:
   draft:
@@ -22,7 +30,7 @@ jobs:
       - name: create draft release
         uses: crabnebula-dev/cloud-release@v0
         with:
-          command: release draft ${{ env.CN_APPLICATION }} --framework tauri
+          command: release draft ${{ env.CN_APPLICATION }} --framework tauri ${{ env.CHANNEL_ARG }}
           api-key: ${{ secrets.CN_API_KEY }}
 
   build_desktop:
@@ -83,7 +91,7 @@ jobs:
       - name: upload assets
         uses: crabnebula-dev/cloud-release@v0
         with:
-          command: release upload ${{ env.CN_APPLICATION }} --framework tauri
+          command: release upload ${{ env.CN_APPLICATION }} --framework tauri ${{ env.CHANNEL_ARG }}
           api-key: ${{ secrets.CN_API_KEY }}
 
   publish:
@@ -97,5 +105,5 @@ jobs:
       - name: publish release
         uses: crabnebula-dev/cloud-release@v0
         with:
-          command: release publish ${{ env.CN_APPLICATION }} --framework tauri
+          command: release publish ${{ env.CN_APPLICATION }} --framework tauri ${{ env.CHANNEL_ARG }}
           api-key: ${{ secrets.CN_API_KEY }}
