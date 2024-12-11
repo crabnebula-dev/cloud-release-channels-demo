@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CN_APPLICATION: "cn-testing/release-channels-demo"
+  CN_APPLICATION: "crabnebula/release-channels-demo"
 
 jobs:
   draft:
