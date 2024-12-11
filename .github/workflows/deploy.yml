@@ -19,7 +19,7 @@ concurrency:
 
 env:
   CN_APPLICATION: "crabnebula/release-channels-demo"
-  CHANNEL_ARG: ${{ inputs.channel == 'stable' && '' || format('--channel {0}', inputs.channel) }}
+  CHANNEL_ARG: ${{ inputs.channel == 'stable' && ' ' || format('--channel {0}', inputs.channel) }}
 
 jobs:
   draft:
